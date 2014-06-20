@@ -1,0 +1,47 @@
+{
+  "replacing": {
+
+  },
+  "platforms": {
+
+  },
+  "description": "Installs/Configures phpmyadmin",
+  "maintainer_email": "bk.box@rackspace.com",
+  "recipes": {
+
+  },
+  "groupings": {
+
+  },
+  "recommendations": {
+
+  },
+  "suggestions": {
+
+  },
+  "version": "0.0.1",
+  "attributes": {
+
+  },
+  "conflicting": {
+
+  },
+  "license": "Apache 2.0",
+  "long_description": "= DESCRIPTION:\n\n= REQUIREMENTS:\n\n= ATTRIBUTES:\n\n= USAGE:\n\n",
+  "name": "phpmyadmin",
+  "providing": {
+
+  },
+  "dependencies": {
+    "php": [
+
+    ],
+    "mysql": [
+
+    ],
+    "apache2": [
+
+    ]
+  },
+  "maintainer": "BK Box"
+}

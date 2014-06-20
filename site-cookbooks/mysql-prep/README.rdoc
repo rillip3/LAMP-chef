@@ -1,0 +1,11 @@
+= DESCRIPTION:
+Provides template files for /root/.my.cnf and the MySQL .my.cnf so attributes
+can be tuned based on size.
+= REQUIREMENTS:
+None, but it is intended to work with Chef's MySQL cookbook.
+
+= ATTRIBUTES:
+TODO
+
+= USAGE:
+TODO

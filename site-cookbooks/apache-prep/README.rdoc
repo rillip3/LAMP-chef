@@ -1,0 +1,12 @@
+= DESCRIPTION:
+Prepares the server to have LAMP installed by setting Apache attributes
+and adding the firewall rules.
+= REQUIREMENTS:
+None, but it is intended to work with Chef's Apache cookbook and the 
+firewall LWRP.
+
+= ATTRIBUTES:
+TODO
+
+= USAGE:
+TODO

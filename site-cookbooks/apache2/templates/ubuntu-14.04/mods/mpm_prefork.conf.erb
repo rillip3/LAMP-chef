@@ -1,0 +1,18 @@
+# prefork MPM
+# StartServers: number of server processes to start
+# MinSpareServers: minimum number of server processes which are kept spare
+# MaxSpareServers: maximum number of server processes which are kept spare
+# MaxRequestWorkers: maximum number of server processes allowed to start
+# MaxConnectionsPerChild: maximum number of requests a server process serves
+
+
+<IfModule mpm_prefork_module>
+    StartServers          <%= node[:apache][:prefork][:startservers] %>
+    MinSpareServers       <%= node[:apache][:prefork][:minspareservers] %>
+    MaxSpareServers       <%= node[:apache][:prefork][:maxspareservers] %>
+    ServerLimit           <%= node[:apache][:prefork][:serverlimit] %>
+    MaxRequestWorkers            <%= node[:apache][:prefork][:maxclients] %>
+    MaxConnectionsPerChild   <%= node[:apache][:prefork][:maxrequestsperchild] %>
+    ListenBacklog         <%= node[:apache][:prefork][:listenbacklog] %>
+</IfModule>
+

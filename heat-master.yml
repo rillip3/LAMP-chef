@@ -1,0 +1,161 @@
+heat_template_version: 2013-05-23
+
+description: |
+  This is a Heat template to deploy multiple LAMP servers
+
+
+parameters:
+
+  server_hostname:
+    label: Server Name
+    description: Hostname to use for setting the server name.
+    type: string
+    default: web
+    constraints:
+    - length:
+        min: 1
+        max: 64
+    - allowed_pattern: "^[a-zA-Z][a-zA-Z0-9-]*$"
+      description: |
+        Must begin with a letter and contain only alphanumeric characters.
+
+  web_server_count:
+    label: Web Server Count
+    description: Number of LAMP servers to deploy
+    type: number
+    default: 1
+    constraints:
+    - range:
+        min: 1
+        max: 10
+      description: Must be between 1 and 10 servers.
+
+  image:
+    label: Server Image
+    description: Operating system to use for the Linux Server
+    type: string
+    default: CentOS 6.5
+    constraints:
+    - allowed_values:
+      - CentOS 6.5 (PVHVM)
+      - Red Hat Enterprise Linux 6.5 (PVHVM)
+      - Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
+      - Ubuntu 12.04 LTS (Precise Pangolin) (PVHVM)
+      - Debian 7 (Wheezy) (PVHVM)
+      description: Must be a supported operating system.
+
+  flavor:
+    label: Cloud Server flavor
+    description: Flavor of Cloud server to use
+    type: string
+    default: 1 GB Performance
+    constraints:
+    - allowed_values:
+      - 1 GB Performance
+      - 2 GB Performance
+      - 4 GB Performance
+      - 8 GB Performance
+      - 15 GB Performance
+      - 30 GB Performance
+      description: |
+        Must be a valid Rackspace Cloud Server flavor for the region you have
+        selected to deploy into.
+
+  phpmyadmin_user:
+    label: Username
+    description: "Username for phpMyAdmin logins."
+    type: string
+    default: serverinfo
+    constraints:
+    - allowed_pattern: "^(.){1,16}$"
+      description: |
+        Must be shorter than 16 characters, this is due to MySQL's maximum
+        username length.
+
+  ssh_keypair_name:
+    label: SSH Keypair Name
+    description: New nova keypair name for ssh access to the server
+    type: string
+    constraints:
+    - allowed_pattern: "^(.){1,64}$"
+      description: "Must be shorter than 64 characters or fewer."
+
+  kitchen:
+    description: URL for the kitchen to use
+    type: string
+    default: https://github.com/cmecca/ChefAnsibleWrapper
+
+  chef_version:
+    description: Version of chef client to use
+    type: string
+    default: 11.12.4
+
+  child_template:
+    description: |
+      Location of the child template to use for the WordPress web servers
+    type: string
+    default: https://raw.githubusercontent.com/rillip3/ChefAnsibleWrapper/master/heat-lamp.yml
+
+resources:
+
+  ssh_key:
+    type: "OS::Nova::KeyPair"
+    properties:
+      name: { get_param: ssh_keypair_name }
+      save_private_key: true
+
+  web_servers:
+    type: "OS::Heat::ResourceGroup"
+    properties:
+      count: { get_param: web_server_count }
+      resource_def:
+        type: { get_param: child_template }
+        properties:
+          server_hostname: { get_param: server_hostnames }
+          image: { get_param: image }
+          flavor: { get_param: flavor }
+          phpmyadmin_uswer: { get_param: phpmyadmin_user }
+          database_password: { get_attr: [database_password, value] }
+          ssh_keypair_name: { get_resource: ssh_key }
+          ssh_private_key: { get_attr: [ssh_key, private_key] }
+          ssh_public_key: { get_attr: [ssh_key, public_key] }
+          kitchen: { get_param: kitchen }
+          chef_version: { get_param: chef_version }
+
+  mysql_root_password:
+    type: "OS::Heat::RandomString"
+    properties:
+      length: 16
+      sequence: lettersdigits
+
+  mysql_repl_password:
+    type: "OS::Heat::RandomString"
+    properties:
+      length: 16
+      sequence: lettersdigits
+
+  mysql_debian_password:
+    type: "OS::Heat::RandomString"
+    properties:
+      length: 16
+      sequence: lettersdigits
+
+  phpmyadmin_pass:
+    type: "OS::Heat::RandomString"
+    properties:
+      length: 16
+      sequence: lettersdigits
+
+outputs:
+  private_key:
+    value: { get_attr: [ssh_key, private_key] }
+
+  server_ip:
+    value: { get_attr: [linux_server, accessIPv4] }
+
+  phpmyadmin_password:
+    value: { get_attr: [phpmyadmin_pass, value] }
+  
+  mysql_root_password:
+    value: { get_attr: [mysql_root_password, value] }
+

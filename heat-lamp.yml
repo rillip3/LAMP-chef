@@ -1,0 +1,133 @@
+heat_template_version: 2013-05-23
+
+description: |
+  This is a Heat template to deploy a single LAMP server
+
+parameters:
+
+  server_hostname:
+    label: Server Name
+    description: Hostname to use for setting the server name.
+    type: string
+    default: web
+    constraints:
+    - length:
+        min: 1
+        max: 64
+    - allowed_pattern: "^[a-zA-Z][a-zA-Z0-9-]*$"
+      description: |
+        Must begin with a letter and contain only alphanumeric characters.
+
+  image:
+    label: Server Image
+    description: Operating system to use for the Linux Server
+    type: string
+    default: CentOS 6.5
+    constraints:
+    - allowed_values:
+      - CentOS 6.5 (PVHVM)
+      - Red Hat Enterprise Linux 6.5 (PVHVM)
+      - Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
+      - Ubuntu 12.04 LTS (Precise Pangolin) (PVHVM)
+      - Debian 7 (Wheezy) (PVHVM)
+      description: Must be a supported operating system.
+
+  flavor:
+    label: Cloud Server flavor
+    description: Flavor of Cloud server to use
+    type: string
+    default: 1 GB Performance
+    constraints:
+    - allowed_values:
+      - 1 GB Performance
+      - 2 GB Performance
+      - 4 GB Performance
+      - 8 GB Performance
+      - 15 GB Performance
+      - 30 GB Performance
+      description: |
+        Must be a valid Rackspace Cloud Server flavor for the region you have
+        selected to deploy into.
+
+  ssh_keypair_name:
+    label: SSH Keypair Name
+    description: New nova keypair name for ssh access to the server
+    type: string
+    constraints:
+    - allowed_pattern: "^(.){1,64}$"
+      description: "Must be shorter than 64 characters or fewer."
+
+  kitchen:
+    description: URL for the kitchen to use
+    type: string
+    default: https://github.com/cmecca/ChefAnsibleWrapper
+
+  chef_version:
+    description: Version of chef client to use
+    type: string
+    default: 11.12.4
+
+resources:
+
+  ssh_keypair_name:
+    description: "keypair name to register with Nova for the root SSH key"
+    type: string
+
+  ssh_public_key:
+    type: string
+
+  ssh_private_key:
+    type: string
+
+  mysql_root_password:
+
+  mysql_repl_password:
+
+  mysql_debian_password: 
+    server_root_password: { get_attr: [mysql_root_password, value] }
+    server_repl_password: { get_attr: [mysql_repl_password, value] }
+    server_debian_password: { get_attr: [mysql_debian_password, value] }
+
+  phpmyadmin_user: { get_param: phpmyadmin_user }
+  phpmyadmin_pass: { get_param: phpmyadmin_pass }
+
+  linux_server:
+    type: "Rackspace::Cloud::Server"
+    properties:
+      name: { get_param: server_hostname }
+      flavor: { get_param: flavor }
+      image: { get_param: image }
+      key_name: { get_resource: ssh_keypair_name }
+      config_drive: "true"
+
+  linux_setup:
+    type: "OS::Heat::ChefSolo"
+    depends_on: linux_server
+    properties:
+      username: root
+      private_key: { get_param: [ssh_public_key, ssh_private_key] }
+      host: { get_param: [linux_server, accessIPv4] }
+      kitchen: { get_param: kitchen }
+      chef_version: { get_param: chef_version }
+      node:
+        run_list: ["recipe[apache-prep]",
+                   "recipe[mysql-prep::repos]"
+                   "recipe[apache2]"
+                   "recipe[php5]"
+                   "recipe[php5::apache]"
+                   "recipe[mysql::server]"
+                   "recipe[phpmyadmin]"
+                   "recipe[holland::mysqldump]"
+                   ]
+        mysql:
+          server_root_password: { get_attr: [mysql_root_password, value] }
+          server_repl_password: { get_attr: [mysql_repl_password, value] }
+          server_debian_password: { get_attr: [mysql_debian_password, value] }
+        phpmyadmin:
+          user: { get_attr: [phpmyadminuser, value] }
+          pass: { get_attr: [phpmyadminpass, value] }
+
+
+outputs:
+  server_ip:
+    value: { get_attr: [linux_server, accessIPv4] }
