@@ -1,4 +1,4 @@
-heat_template_version: 2013-05-23
+heat_template_version: 2013-06-23
 
 description: |
   This is a Heat template to deploy multiple LAMP servers
@@ -34,7 +34,7 @@ parameters:
     label: Server Image
     description: Operating system to use for the Linux Server
     type: string
-    default: CentOS 6.5
+    default: CentOS 6.5 (PVHVM)
     constraints:
     - allowed_values:
       - CentOS 6.5 (PVHVM)
@@ -83,7 +83,7 @@ parameters:
   kitchen:
     description: URL for the kitchen to use
     type: string
-    default: https://github.com/cmecca/ChefAnsibleWrapper
+    default: https://github.com/rillip3/LAMP
 
   chef_version:
     description: Version of chef client to use
@@ -111,11 +111,10 @@ resources:
       resource_def:
         type: { get_param: child_template }
         properties:
-          server_hostname: { get_param: server_hostnames }
+          server_hostname: { get_param: server_hostname }
           image: { get_param: image }
           flavor: { get_param: flavor }
           phpmyadmin_uswer: { get_param: phpmyadmin_user }
-          database_password: { get_attr: [database_password, value] }
           ssh_keypair_name: { get_resource: ssh_key }
           ssh_private_key: { get_attr: [ssh_key, private_key] }
           ssh_public_key: { get_attr: [ssh_key, public_key] }
