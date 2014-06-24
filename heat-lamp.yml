@@ -77,7 +77,7 @@ resources:
       name: { get_param: server_hostname }
       flavor: { get_param: flavor }
       image: { get_param: image }
-      key_name: { get_resource: ssh_keypair_name }
+      key_name: { get_param: ssh_keypair_name }
       config_drive: "true"
 
   linux_setup:
@@ -85,7 +85,7 @@ resources:
     depends_on: linux_server
     properties:
       username: root
-      private_key: { get_param: [ssh_public_key, ssh_private_key] }
+      private_key: { get_param: ssh_private_key  }
       host: { get_param: [linux_server, accessIPv4] }
       kitchen: { get_param: kitchen }
       chef_version: { get_param: chef_version }
@@ -100,12 +100,12 @@ resources:
                    "recipe[holland::mysqldump]"
                    ]
         mysql:
-          server_root_password: { get_attr: [mysql_root_password, value] }
-          server_repl_password: { get_attr: [mysql_repl_password, value] }
-          server_debian_password: { get_attr: [mysql_debian_password, value] }
+          server_root_password: { get_param: [mysql_root_password, value] }
+          server_repl_password: { get_param: [mysql_repl_password, value] }
+          server_debian_password: { get_param: [mysql_debian_password, value] }
         phpmyadmin:
-          user: { get_attr: [phpmyadminuser, value] }
-          pass: { get_attr: [phpmyadminpass, value] }
+          user: { get_param: [phpmyadminuser, value] }
+          pass: { get_param: [phpmyadminpass, value] }
 
 
 outputs:
