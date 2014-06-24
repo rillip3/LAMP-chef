@@ -122,6 +122,13 @@ resources:
       kitchen: { get_param: kitchen }
       chef_version: { get_param: chef_version }
       node:
+        mysql:
+          server_root_password: { get_attr: [mysql_root_password, value] }
+          server_repl_password: { get_attr: [mysql_repl_password, value] }
+          server_debian_password: { get_attr: [mysql_debian_password, value] }
+        phpmyadmin:
+            pass: { get_attr: [phpmyadmin_pass, value] }
+            user: { get_param: phpmyadmin_user }
         run_list: ["recipe[apache-prep]",
                    "recipe[mysql-prep::repos]",
                    "recipe[apache2]",
@@ -129,8 +136,7 @@ resources:
                    "recipe[php5::apache]",
                    "recipe[mysql::server]",
                    "recipe[phpmyadmin]",
-                   "recipe[holland::mysqldump]"
-                   ]
+                   "recipe[holland::mysqldump]"]
 
 outputs:
   private_key:
