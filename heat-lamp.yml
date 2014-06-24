@@ -50,12 +50,14 @@ parameters:
         selected to deploy into.
 
   ssh_keypair_name:
-    label: SSH Keypair Name
-    description: New nova keypair name for ssh access to the server
+    description: "keypair name to register with Nova for the root SSH key"
     type: string
-    constraints:
-    - allowed_pattern: "^(.){1,64}$"
-      description: "Must be shorter than 64 characters or fewer."
+
+  ssh_public_key:
+    type: string
+
+  ssh_private_key:
+    type: string
 
   kitchen:
     description: URL for the kitchen to use
@@ -68,16 +70,6 @@ parameters:
     default: 11.12.4
 
 resources:
-
-  ssh_keypair_name:
-    description: "keypair name to register with Nova for the root SSH key"
-    type: string
-
-  ssh_public_key:
-    type: string
-
-  ssh_private_key:
-    type: string
 
   linux_server:
     type: "Rackspace::Cloud::Server"
