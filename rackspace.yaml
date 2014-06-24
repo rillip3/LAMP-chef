@@ -37,7 +37,7 @@ instructions: |
   [MySQL](http://www.mysql.com/) v5.5 is installed on Ubuntu 12.04, 14.04,
   Red Hat Enterprise Linux 6.5 and CentOS v6.5. MySQL v5.1 is installed on
   Ubuntu 10.04. The MySQL root password is recorded in root's home directory
-  in the file .my.cnf and in the View Generated Passwords dialog. Daily
+  in the file .my.cnf and in the passwords section of this deployment. Daily
   database backups are taken using [Holland](http://hollandbackup.org/). A
   rotating seven days of database dumps are stored in /var/lib/mysqlbackup.
 
@@ -47,6 +47,6 @@ instructions: |
   [phpMyAdmin](http://www.phpmyadmin.net/) is available via HTTP at
   /phpmyadmin. Apache is configured to require HTTP basic authentication.
   Log in as the user specified when deploying (the default is `admin`)
-  with the password displayed in the View Generated Passwords dialog.
+  with the password displayed in the passwords section of this deployment.
   You may then login using MySQL login credentials which are also available
-  in the View Generated Passwords dialog.
+  in the passwords section of this deployment.
