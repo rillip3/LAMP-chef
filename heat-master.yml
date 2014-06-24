@@ -19,17 +19,6 @@ parameters:
       description: |
         Must begin with a letter and contain only alphanumeric characters.
 
-  web_server_count:
-    label: Web Server Count
-    description: Number of LAMP servers to deploy
-    type: number
-    default: 1
-    constraints:
-    - range:
-        min: 1
-        max: 10
-      description: Must be between 1 and 10 servers.
-
   image:
     label: Server Image
     description: Operating system to use for the Linux Server
@@ -90,12 +79,6 @@ parameters:
     type: string
     default: 11.12.4
 
-  child_template:
-    description: |
-      Location of the child template to use for the WordPress web servers
-    type: string
-    default: https://raw.githubusercontent.com/rillip3/LAMP/master/heat-lamp.yml
-
 resources:
 
   ssh_key:
@@ -103,23 +86,6 @@ resources:
     properties:
       name: { get_param: ssh_keypair_name }
       save_private_key: true
-
-  web_servers:
-    type: "OS::Heat::ResourceGroup"
-    properties:
-      count: { get_param: web_server_count }
-      resource_def:
-        type: { get_param: child_template }
-        properties:
-          server_hostname: { get_param: server_hostname }
-          image: { get_param: image }
-          flavor: { get_param: flavor }
-          phpmyadmin_user: { get_param: phpmyadmin_user }
-          ssh_keypair_name: { get_resource: ssh_key }
-          ssh_private_key: { get_attr: [ssh_key, private_key] }
-          ssh_public_key: { get_attr: [ssh_key, public_key] }
-          kitchen: { get_param: kitchen }
-          chef_version: { get_param: chef_version }
 
   mysql_root_password:
     type: "OS::Heat::RandomString"
@@ -144,6 +110,35 @@ resources:
     properties:
       length: 16
       sequence: lettersdigits
+
+  linux_server:
+    type: "Rackspace::Cloud::Server"
+    properties:
+      name: { get_param: server_hostname }
+      flavor: { get_param: flavor }
+      image: { get_param: image }
+      key_name: { get_param: ssh_keypair_name }
+      config_drive: "true"
+
+  linux_setup:
+    type: "OS::Heat::ChefSolo"
+    depends_on: linux_server
+    properties:
+      username: root
+      private_key: { get_param: ssh_private_key  }
+      host: { get_attr: [linux_server, accessIPv4] }
+      kitchen: { get_param: kitchen }
+      chef_version: { get_param: chef_version }
+      node:
+        run_list: ["recipe[apache-prep]",
+                   "recipe[mysql-prep::repos]",
+                   "recipe[apache2]",
+                   "recipe[php5]",
+                   "recipe[php5::apache]",
+                   "recipe[mysql::server]",
+                   "recipe[phpmyadmin]",
+                   "recipe[holland::mysqldump]"
+                   ]
 
 outputs:
   private_key:
