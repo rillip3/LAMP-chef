@@ -111,12 +111,12 @@ resources:
       chef_version: { get_param: chef_version }
       node:
         run_list: ["recipe[apache-prep]",
-                   "recipe[mysql-prep::repos]"
-                   "recipe[apache2]"
-                   "recipe[php5]"
-                   "recipe[php5::apache]"
-                   "recipe[mysql::server]"
-                   "recipe[phpmyadmin]"
+                   "recipe[mysql-prep::repos]",
+                   "recipe[apache2]",
+                   "recipe[php5]",
+                   "recipe[php5::apache]",
+                   "recipe[mysql::server]",
+                   "recipe[phpmyadmin]",
                    "recipe[holland::mysqldump]"
                    ]
         mysql:

@@ -114,7 +114,7 @@ resources:
           server_hostname: { get_param: server_hostname }
           image: { get_param: image }
           flavor: { get_param: flavor }
-          phpmyadmin_uswer: { get_param: phpmyadmin_user }
+          phpmyadmin_user: { get_param: phpmyadmin_user }
           ssh_keypair_name: { get_resource: ssh_key }
           ssh_private_key: { get_attr: [ssh_key, private_key] }
           ssh_public_key: { get_attr: [ssh_key, public_key] }
