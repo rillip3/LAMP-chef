@@ -79,18 +79,6 @@ resources:
   ssh_private_key:
     type: string
 
-  mysql_root_password:
-
-  mysql_repl_password:
-
-  mysql_debian_password: 
-    server_root_password: { get_attr: [mysql_root_password, value] }
-    server_repl_password: { get_attr: [mysql_repl_password, value] }
-    server_debian_password: { get_attr: [mysql_debian_password, value] }
-
-  phpmyadmin_user: { get_param: phpmyadmin_user }
-  phpmyadmin_pass: { get_param: phpmyadmin_pass }
-
   linux_server:
     type: "Rackspace::Cloud::Server"
     properties:
