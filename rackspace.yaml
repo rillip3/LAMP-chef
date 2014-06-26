@@ -32,7 +32,8 @@ instructions: |
 
   #### Details of Your Setup
   [Apache](http://www.apache.org/) v2.2 is installed on all Red Hat
-  Enterprise Linux and Ubuntu distributions.
+  Enterprise Linux and CentOS distributions. Ubuntu 14.04 comes with Apache 
+  2.4. Other versions of Ubuntu come with 2.2.
 
   [MySQL](http://www.mysql.com/) v5.5 is installed on Ubuntu 12.04, 14.04,
   Red Hat Enterprise Linux 6.5 and CentOS v6.5. MySQL v5.1 is installed on
